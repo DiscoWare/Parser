@@ -17,9 +17,18 @@ struct Token
     string lexeme_;
 };
 
+////////////////////////////////
+// Global Variables
+////////////////////////////////
 string workingString;
 ofstream parseOutput;
 stack<char> Stack;
+vector<Token> tokenVec;
+vector<Token>::const_iterator currentToken;
+
+////////////////////////////////
+// Production Table
+////////////////////////////////
 string Table[8][9] = {{"A;", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "D;", "C"},
                       {"i=E", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID"},
                       {"iF", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID"},
@@ -28,9 +37,6 @@ string Table[8][9] = {{"A;", "INVALID", "INVALID", "INVALID", "INVALID", "INVALI
                       {"TU", "INVALID", "INVALID", "INVALID", "INVALID", "EPSILON", "EPSILON", "TU", "TU"},
                       {"INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "EPSILON", "INVALID", "ti=E", "INVALID"},
                       {"INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "k(ici)"}};
-
-vector<Token> tokenVec;
-vector<Token>::const_iterator currentToken;
 
 int convertToIndex(Token token)
 {
@@ -95,6 +101,9 @@ int convertNonTerminal(char c)
         return -1;
 }
 
+//////////////////////////////////////////
+// Optional print function for debugging
+//////////////////////////////////////////
 void printStack()
 {
     stack<char> newStack = Stack;
@@ -107,11 +116,11 @@ void printStack()
 
 }
 
+//////////////////////////////////////////////////
+// Put all tokens from source code into .txt file
+//////////////////////////////////////////////////
 void tokenize()
 {
-    Stack.push('$');
-    Stack.push('T');
-
     ifstream in;
     in.open("tokens.txt");
     string str;
@@ -125,10 +134,11 @@ void tokenize()
         tokenVec.push_back(token);
     }
     in.close();
-    tokenVec.push_back(Token("SEPARATOR", "$"));
-    currentToken = tokenVec.begin();
 }
 
+////////////////////////////////
+// For pushing in reverse order
+////////////////////////////////
 void reversePush(const string& str)
 {
     if (str == "EPSILON")
@@ -139,6 +149,9 @@ void reversePush(const string& str)
     }
 }
 
+///////////////////////////////////////////
+// Optional Stack Dump for Error Debugging
+///////////////////////////////////////////
 void dumpStack()
 {
     parseOutput << "Contents of Stack:\n";
@@ -149,6 +162,9 @@ void dumpStack()
     }
 }
 
+////////////////////////////////
+// Handling Terminals
+////////////////////////////////
 void handleTerminal(vector<Token>::const_iterator& currentToken)
 {
     if (currentToken->lexeme_.size() == 1 && currentToken->lexeme_[0] == Stack.top())
@@ -163,6 +179,9 @@ void handleTerminal(vector<Token>::const_iterator& currentToken)
     }
 }
 
+/////////////////////////////////
+// Handling Identifiers/Literals
+/////////////////////////////////
 void handleIdentifier(vector<Token>::const_iterator& currentToken)
 {
     if (currentToken->token_ == "IDENTIFIER" || currentToken->token_ == "INT_LITERAL")
@@ -176,6 +195,9 @@ void handleIdentifier(vector<Token>::const_iterator& currentToken)
     currentToken++;
 }
 
+////////////////////////////////
+// Handle Compare Statements
+////////////////////////////////
 void handleCompare(vector<Token>::const_iterator& currentToken)
 {
     if (Stack.top() == 'c')
@@ -199,6 +221,9 @@ void handleCompare(vector<Token>::const_iterator& currentToken)
 
 }
 
+////////////////////////////////
+// Handle Type Declarations
+////////////////////////////////
 void handleType(vector<Token>::const_iterator& currentToken)
 {
     if (currentToken->lexeme_ == "int" || currentToken->lexeme_ == "float")
@@ -209,6 +234,9 @@ void handleType(vector<Token>::const_iterator& currentToken)
     currentToken++;
 }
 
+////////////////////////////////
+// Finish File
+////////////////////////////////
 void finishFile(vector<Token>::const_iterator& currentToken)
 {
     if (currentToken->lexeme_ == "$")
@@ -218,6 +246,9 @@ void finishFile(vector<Token>::const_iterator& currentToken)
     Stack.pop();
 }
 
+////////////////////////////////////
+// Information for Production Rules
+////////////////////////////////////
 void printNonTerminalInfo()
 {
     string message;
@@ -253,6 +284,9 @@ void printNonTerminalInfo()
     parseOutput << "     " << message << endl;
 }
 
+//////////////////////////////////////////////////////////
+// Handle Non-Terminals; Check Stack Equals Current Token
+//////////////////////////////////////////////////////////
 void handleNonTerminal(vector<Token>::const_iterator& currentToken)
 {
     printNonTerminalInfo();
@@ -274,12 +308,20 @@ void handleNonTerminal(vector<Token>::const_iterator& currentToken)
     }
 }
 
+////////////////////////////////
+// Main Driver Function
+////////////////////////////////
 void Driver()
 {
+    // Driver setup
     parseOutput.open("output.txt");
+    Stack.push('$');
+    Stack.push('T');
+    tokenVec.push_back(Token("SEPARATOR", "$"));
+    currentToken = tokenVec.begin();
     while (!Stack.empty())
     {
-        // printStack();
+        // printStack();                  // Optional stack printing for debugging
         if (Stack.top() == '+' || Stack.top() == '*' || Stack.top() == '=' || Stack.top() == '-' 
                    || Stack.top() == ';' || Stack.top() == ')' || Stack.top() == '(')
             handleTerminal(currentToken);
