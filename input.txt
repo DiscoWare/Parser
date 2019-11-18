@@ -5,4 +5,4 @@ x = x;
 x = 69;     
 int x = 54;          
 int x = 3;    
-status = 2 + x;                                                                                                                              
+status = 2 + x;                                                                                                                                
