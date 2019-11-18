@@ -1,0 +1,8 @@
+<Statements> -> <Statement> <Statements Prime>
+<Statements Prime> -> <Statements> <Statements Prime> | epsilon
+<Statement> -> <Assignment> | <Declaration> | <Compare>
+<Assignment> -> id = <Expression>
+<Expression> -> id <Expression Prime>
+<Expression Prime> -> +id | -id | *id | epsilon
+<Declarative> -> type id = <Expression>
+<Compare Statement> -> compare_keyword ( id compare_operator id )

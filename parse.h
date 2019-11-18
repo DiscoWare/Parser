@@ -112,7 +112,7 @@ void tokenize()
     Stack.push('T');
 
     ifstream in;
-    in.open("output.txt");
+    in.open("tokens.txt");
     string str;
     Token token;
     while (in >> str)

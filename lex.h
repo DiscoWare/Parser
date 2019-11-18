@@ -178,7 +178,7 @@ void handleCurrentChar(char c)
 
 void processFile(string fileName)
 {
-    output.open("output.txt");
+    output.open("tokens.txt");
     ofstream o;
     o.open(fileName, ios_base::app);
     o << " ";
