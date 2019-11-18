@@ -6,8 +6,14 @@
 #include <stdexcept>
 using namespace std;
 
+////////////////////////////////
+// Function Definitions
+////////////////////////////////
 void Driver();
 
+/////////////////////////////////////
+// Token struct for Token and Lexeme
+/////////////////////////////////////
 struct Token
 {
     Token(const string& token, const string& lexeme) {token_ = token; lexeme_ = lexeme; };
@@ -38,6 +44,9 @@ string Table[8][9] = {{"A;", "INVALID", "INVALID", "INVALID", "INVALID", "INVALI
                       {"INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "EPSILON", "INVALID", "ti=E", "INVALID"},
                       {"INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "k(ici)"}};
 
+/////////////////////////////////////////
+// Convert To Index for Production Table
+/////////////////////////////////////////
 int convertToIndex(Token token)
 {
     if (token.token_ == "IDENTIFIER" || token.token_ == "INT_LITERAL")
@@ -79,6 +88,9 @@ int convertToIndex(Token token)
     return -1;
 };
 
+//////////////////////////////////////////////
+// Convert Non Terminals for Production Table
+//////////////////////////////////////////////
 int convertNonTerminal(char c)
 {
     if (c == 'S')
@@ -319,6 +331,8 @@ void Driver()
     Stack.push('T');
     tokenVec.push_back(Token("SEPARATOR", "$"));
     currentToken = tokenVec.begin();
+
+    // Main loop--Only stops once the stack is empty
     while (!Stack.empty())
     {
         // printStack();                  // Optional stack printing for debugging
