@@ -18,7 +18,7 @@ struct Token
 };
 
 string workingString;
-ofstream output;
+ofstream parseOutput;
 stack<char> Stack;
 string Table[8][9] = {{"A;", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "D;", "C"},
                       {"i=E", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID"},
@@ -100,7 +100,7 @@ void printStack()
     stack<char> newStack = Stack;
     while (!Stack.empty())
     {
-        output << "| " << Stack.top() << " |" << endl;
+        parseOutput << "| " << Stack.top() << " |" << endl;
         Stack.pop();
     }
     Stack = newStack;
@@ -141,10 +141,10 @@ void reversePush(const string& str)
 
 void dumpStack()
 {
-    output << "Contents of Stack:\n";
+    parseOutput << "Contents of Stack:\n";
     while (!Stack.empty())
     {
-        output << Stack.top() << endl;
+        parseOutput << Stack.top() << endl;
         Stack.pop();
     }
 }
@@ -154,12 +154,12 @@ void handleTerminal(vector<Token>::const_iterator& currentToken)
     if (currentToken->lexeme_.size() == 1 && currentToken->lexeme_[0] == Stack.top())
     {
         Stack.pop();
-        output << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
+        parseOutput << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
         currentToken++;
     }
     else
     {
-        output << "ERROR: EXPECTED " << Stack.top() << " BUT GOT " << currentToken->lexeme_ << endl;
+        parseOutput << "ERROR: EXPECTED " << Stack.top() << " BUT GOT " << currentToken->lexeme_ << endl;
     }
 }
 
@@ -167,10 +167,10 @@ void handleIdentifier(vector<Token>::const_iterator& currentToken)
 {
     if (currentToken->token_ == "IDENTIFIER" || currentToken->token_ == "INT_LITERAL")
     {
-        output << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
+        parseOutput << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
     }
     else
-        output << "ERROR: EXPECTED IDENTIFIER OR LITERAL BUT RECEIVED: " << currentToken->lexeme_ << endl;
+        parseOutput << "ERROR: EXPECTED IDENTIFIER OR LITERAL BUT RECEIVED: " << currentToken->lexeme_ << endl;
         
     Stack.pop();
     currentToken++;
@@ -181,19 +181,19 @@ void handleCompare(vector<Token>::const_iterator& currentToken)
     if (Stack.top() == 'c')
     {
         if (currentToken->lexeme_ == ">" || currentToken->lexeme_ == "<" || currentToken->lexeme_ == "==" )
-            output << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
+            parseOutput << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
         else
-            output << "ERROR: EXPECTED COMPARE OPERATOR BUT RECEIVED: " << currentToken->lexeme_ << endl;
+            parseOutput << "ERROR: EXPECTED COMPARE OPERATOR BUT RECEIVED: " << currentToken->lexeme_ << endl;
     }
     else if (Stack.top() == 'k')
     {
         if (currentToken->lexeme_ == "if" || currentToken->lexeme_ == "while")
-            output << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
+            parseOutput << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
         else
-            output << "ERROR: EXPECTED COMPARE KEYWORD BUT RECEIVED: " << currentToken->lexeme_ << endl;
+            parseOutput << "ERROR: EXPECTED COMPARE KEYWORD BUT RECEIVED: " << currentToken->lexeme_ << endl;
     }
     else 
-        output << "ERROR. EXPECTED c or k ON THE STACK\n";
+        parseOutput << "ERROR. EXPECTED c or k ON THE STACK\n";
     Stack.pop();
     currentToken++;
 
@@ -202,9 +202,9 @@ void handleCompare(vector<Token>::const_iterator& currentToken)
 void handleType(vector<Token>::const_iterator& currentToken)
 {
     if (currentToken->lexeme_ == "int" || currentToken->lexeme_ == "float")
-        output << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
+        parseOutput << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
     else
-        output << "ERROR: EXPECTED VARIABLE TYPE BUT RECEIVED: " << currentToken->lexeme_ << endl;
+        parseOutput << "ERROR: EXPECTED VARIABLE TYPE BUT RECEIVED: " << currentToken->lexeme_ << endl;
     Stack.pop();
     currentToken++;
 }
@@ -212,9 +212,9 @@ void handleType(vector<Token>::const_iterator& currentToken)
 void finishFile(vector<Token>::const_iterator& currentToken)
 {
     if (currentToken->lexeme_ == "$")
-        output << "FILE PARSED SUCCESSFULLY\n";
+        parseOutput << "FILE PARSED SUCCESSFULLY\n";
     else
-        output << "PARSER FAILED. EOF SYMBOL NOT ON TOP OF STACK\n";
+        parseOutput << "PARSER FAILED. EOF SYMBOL NOT ON TOP OF STACK\n";
     Stack.pop();
 }
 
@@ -248,9 +248,9 @@ void printNonTerminalInfo()
             message = "<Compare Statement> -> compare_keyword ( id compare_operator id )";
             break;
         default:
-            output << "ERROR: NON-TERMINAL ON TOP OF STACK: " << Stack.top();
+            parseOutput << "ERROR: NON-TERMINAL ON TOP OF STACK: " << Stack.top();
     }
-    output << "     " << message << endl;
+    parseOutput << "     " << message << endl;
 }
 
 void handleNonTerminal(vector<Token>::const_iterator& currentToken)
@@ -268,7 +268,7 @@ void handleNonTerminal(vector<Token>::const_iterator& currentToken)
     }
     else
     {
-        output << "ERROR. GOT INVALID TABLE VALUE WHILE WORKING ON LEXEME: " << currentToken->lexeme_ 
+        parseOutput << "ERROR. GOT INVALID TABLE VALUE WHILE WORKING ON LEXEME: " << currentToken->lexeme_ 
              << ". Top of Stack: " << Stack.top() << endl;
         dumpStack();
     }
@@ -276,7 +276,7 @@ void handleNonTerminal(vector<Token>::const_iterator& currentToken)
 
 void Driver()
 {
-    output.open("output.txt");
+    parseOutput.open("output.txt");
     while (!Stack.empty())
     {
         // printStack();
