@@ -213,9 +213,9 @@ void handleType(vector<Token>::const_iterator& currentToken)
 void finishFile(vector<Token>::const_iterator& currentToken)
 {
     if (currentToken->lexeme_ == "$")
-        cout << "Successfully finished file\n";
+        cout << "FILE PARSED SUCCESSFULLY\n";
     else
-        cout << "File failed\n";
+        cout << "PARSER FAILED. EOF SYMBOL NOT ON TOP OF STACK\n";
     Stack.pop();
 }
 
@@ -225,7 +225,7 @@ void printNonTerminalInfo()
     switch (Stack.top())
     {
         case 'S': 
-            message = "<Statement> -> <Assignment>";
+            message = "<Statement> -> <Assignment> | <Declaration> | <Compare>";
             break;
         case 'A': 
             message = "<Assignment> -> id = <Expression>";
@@ -243,7 +243,7 @@ void printNonTerminalInfo()
             message = "<Statements Prime> -> <Statements> <Statements Prime> | epsilon";
             break;
         case 'D': 
-            message = "<Declarative> -> type = <Expression>";
+            message = "<Declarative> -> type id = <Expression>";
             break;
         case 'C': 
             message = "<Compare Statement> -> compare_keyword ( id compare_operator id )";
@@ -258,7 +258,6 @@ void handleNonTerminal(vector<Token>::const_iterator& currentToken)
 {
     printNonTerminalInfo();
     workingString = Table[convertNonTerminal(Stack.top())][convertToIndex(*currentToken)];
-    // cout << "Stack: " << Stack.top() << " Token: " << currentToken->lexeme_ << endl;
     if (workingString != "INVALID")
     {
         Stack.pop();
@@ -280,6 +279,7 @@ void Driver()
 {
     while (!Stack.empty())
     {
+        // printStack();
         if (Stack.top() == '+' || Stack.top() == '*' || Stack.top() == '=' || Stack.top() == '-' 
                    || Stack.top() == ';' || Stack.top() == ')' || Stack.top() == '(')
             handleTerminal(currentToken);

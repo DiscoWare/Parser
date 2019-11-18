@@ -9,4 +9,6 @@ status = 2 + x;
 if (x < y)
     x = y;    
 while (i < 100)
-    x = x + 1;                                                                                                                                      
+    x = x + 1;  
+while (i < 100)
+    x = 1;                                                                                                                                              
