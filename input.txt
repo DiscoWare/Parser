@@ -1,8 +1,12 @@
-x = 1 + 2;        
+2 = 1 + 2;        
 x = 1 + 42;     
 x = x - 2; 
 x = x;
 x = 69;     
 int x = 54;          
 int x = 3;    
-status = 2 + x;                                                                                                                                
+status = 2 + x;   
+if (x < y)
+    x = y;    
+while (i < 100)
+    x = x + 1;                                                                                                                                      

@@ -19,13 +19,14 @@ struct Token
 
 string workingString;
 stack<char> Stack;
-string Table[7][8] = {{"A;", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "D;"},
-                      {"i=E", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID"},
-                      {"iF", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID"},
-                      {"INVALID", "+i", "-i", "*i", "INVALID", "INVALID", "EPSILON", "INVALID"},
-                      {"SU", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "SU"},
-                      {"TU", "INVALID", "INVALID", "INVALID", "INVALID", "EPSILON", "EPSILON", "TU"},
-                      {"INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "EPSILON", "INVALID", "ti=E"}};
+string Table[8][9] = {{"A;", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "D;", "C"},
+                      {"i=E", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID"},
+                      {"iF", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID"},
+                      {"INVALID", "+i", "-i", "*i", "INVALID", "INVALID", "EPSILON", "INVALID", "INVALID"},
+                      {"SU", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "SU", "SU"},
+                      {"TU", "INVALID", "INVALID", "INVALID", "INVALID", "EPSILON", "EPSILON", "TU", "TU"},
+                      {"INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "EPSILON", "INVALID", "ti=E", "INVALID"},
+                      {"INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "INVALID", "k(ici)"}};
 
 vector<Token> tokenVec;
 vector<Token>::const_iterator currentToken;
@@ -64,6 +65,10 @@ int convertToIndex(Token token)
     {
         return 7;
     }
+    else if (token.lexeme_ == "if" || token.lexeme_ == "while")
+    {
+        return 8;
+    }
     return -1;
 };
 
@@ -83,6 +88,8 @@ int convertNonTerminal(char c)
         return 5;
     else if (c == 'D')
         return 6;
+    else if (c == 'C')
+        return 7;
     else
         return -1;
 }
@@ -170,6 +177,29 @@ void handleIdentifier(vector<Token>::const_iterator& currentToken)
     currentToken++;
 }
 
+void handleCompare(vector<Token>::const_iterator& currentToken)
+{
+    if (Stack.top() == 'c')
+    {
+        if (currentToken->lexeme_ == ">" || currentToken->lexeme_ == "<" || currentToken->lexeme_ == "==" )
+            cout << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
+        else
+            cerr << "ERROR: EXPECTED COMPARE OPERATOR BUT RECEIVED: " << currentToken->lexeme_ << endl;
+    }
+    else if (Stack.top() == 'k')
+    {
+        if (currentToken->lexeme_ == "if" || currentToken->lexeme_ == "while")
+            cout << "\nToken: " << currentToken->token_ << "    Lexeme: " << currentToken->lexeme_ << endl;
+        else
+            cerr << "ERROR: EXPECTED COMPARE KEYWORD BUT RECEIVED: " << currentToken->lexeme_ << endl;
+    }
+    else 
+        cerr << "ERROR. EXPECTED c or k ON THE STACK\n";
+    Stack.pop();
+    currentToken++;
+
+}
+
 void handleType(vector<Token>::const_iterator& currentToken)
 {
     if (currentToken->lexeme_ == "int" || currentToken->lexeme_ == "float")
@@ -215,6 +245,9 @@ void printNonTerminalInfo()
         case 'D': 
             message = "<Declarative> -> type = <Expression>";
             break;
+        case 'C': 
+            message = "<Compare Statement> -> compare_keyword ( id compare_operator id )";
+            break;
         default:
             cerr << "ERROR: NON-TERMINAL ON TOP OF STACK: " << Stack.top();
     }
@@ -225,6 +258,7 @@ void handleNonTerminal(vector<Token>::const_iterator& currentToken)
 {
     printNonTerminalInfo();
     workingString = Table[convertNonTerminal(Stack.top())][convertToIndex(*currentToken)];
+    // cout << "Stack: " << Stack.top() << " Token: " << currentToken->lexeme_ << endl;
     if (workingString != "INVALID")
     {
         Stack.pop();
@@ -246,10 +280,13 @@ void Driver()
 {
     while (!Stack.empty())
     {
-        if (Stack.top() == '+' || Stack.top() == '*' || Stack.top() == '=' || Stack.top() == '-' || Stack.top() == ';')
+        if (Stack.top() == '+' || Stack.top() == '*' || Stack.top() == '=' || Stack.top() == '-' 
+                   || Stack.top() == ';' || Stack.top() == ')' || Stack.top() == '(')
             handleTerminal(currentToken);
         else if (Stack.top() == 'i')
             handleIdentifier(currentToken);
+        else if (Stack.top() == 'c' || Stack.top() == 'k')
+            handleCompare(currentToken);
         else if (Stack.top() == '$')
             finishFile(currentToken);
         else if (Stack.top() == 't')
