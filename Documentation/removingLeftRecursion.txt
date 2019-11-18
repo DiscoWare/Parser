@@ -1,0 +1,16 @@
+*****Production Rules with Left Recursion*****
+<Statements> -> <Statement> <Statements>
+<Statement> -> <Statement> <Statements>
+<Statement> -> <Assignment> | <Declaration> | <Compare>
+
+<Expressions> -> <Expression> <Expressions>
+<Expression> -> <Expression> <Expressions>
+<Expression> -> +id | -id | *id | epsilon
+
+*****Production Rules After Removing Left Recursion*****
+<Statements> -> <Statement> <Statements Prime>
+<Statements Prime> -> <Statements> <Statements Prime> | epsilon
+<Statement> -> <Assignment> | <Declaration> | <Compare>
+
+<Expression> -> id <Expression Prime>
+<Expression Prime> -> +id | -id | *id | epsilon
