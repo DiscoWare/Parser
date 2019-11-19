@@ -1,8 +1,10 @@
 *****Production Rules with Left Recursion*****
 <Statements> -> <Statement> <Statements>
+<Statement> -> <Statement>
 <Statement> -> <Assignment> | <Declaration> | <Compare>
 
 <Expressions> -> <Expression> <Expressions>
+<Expression> -> <Expression>
 <Expression> -> +id | -id | *id | epsilon
 
 *****Production Rules After Removing Left Recursion*****
