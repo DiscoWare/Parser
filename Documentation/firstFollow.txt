@@ -1,0 +1,15 @@
+*****Firsts******
+
+first(<Statements>) = { name/literal, type, compare_keyword}
+first(< Multiple Statements Prime>) = { name/literal, type, compare_keyword } 
+first(<Multiple Statement>) = { name/literal, type, compare_keyword }
+first(<Assignment>) = { name/literal }
+first(<Expression>) = { name/literal }
+first(<Expression Prime>) = { +, -, * }
+first(<Declarative>) = { type }
+first(<Compare Statement>) = { compare_keyword }
+
+*****Follows*****
+follow(<Expression Prime>) = { ; }
+follow(<Multiple Statements Prime) = { $, ; }
+follow(<Declarative>) = { $ }
