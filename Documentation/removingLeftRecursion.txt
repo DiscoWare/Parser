@@ -5,7 +5,7 @@
 
 <Expressions> -> <Expression> <Expressions>
 <Expression> -> <Expression>
-<Expression> -> +id | -id | *id | epsilon
+<Expression> -> +id | -id | *id 
 
 *****Production Rules After Removing Left Recursion*****
 <Statements> -> <Statement> <Statements Prime>
